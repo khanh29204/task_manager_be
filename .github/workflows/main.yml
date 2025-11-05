@@ -51,5 +51,5 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            cd ~/${{ github.repository }}/
+            cd ~/task_manager_be/
             bash pull.sh
