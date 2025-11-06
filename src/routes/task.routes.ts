@@ -7,9 +7,10 @@ import {
   toggleCompleteTask,
 } from "../controllers/task.controller";
 import {
-  processAndSaveFileWithHash,
+  processAndSaveFileByHash,
   upload,
 } from "../middlewares/upload.middleware";
+import slugify from "slugify";
 
 const router = Router();
 
@@ -21,14 +22,11 @@ router.patch("/:id/complete", toggleCompleteTask);
 router.post(
   "/upload",
   upload.single("file"),
-  processAndSaveFileWithHash,
+  processAndSaveFileByHash,
   (req, res) => {
-    if (!req.file || !req.file.filename) {
-      return res
-        .status(400)
-        .json({ message: "Không có file hoặc xử lý file thất bại." });
-    }
-    const fileUrl = `${process.env.BASE_URL}/uploads/${req.file.filename}`;
+    const { hashedFilename, originalFilename } = (req as any).fileInfo;
+    const fileUrl = `${process.env.BASE_URL}/api/files/${hashedFilename}/${originalFilename}`;
+
     res.status(201).json({ url: fileUrl });
   }
 );

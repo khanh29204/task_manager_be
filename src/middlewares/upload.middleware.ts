@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs/promises";
 import crypto from "crypto";
 import { Request, Response, NextFunction } from "express";
+import slugify from "slugify";
 
 const UPLOAD_DIR = path.join(__dirname, "../../uploads");
 (async () => {
@@ -38,33 +39,32 @@ export const upload = multer({
   },
 });
 
-export const processAndSaveFileWithHash = async (
+export const processAndSaveFileByHash = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  if (!req.file) {
-    return next();
-  }
+  if (!req.file) return next();
 
   try {
     const buffer = req.file.buffer;
     const extension = path.extname(req.file.originalname).toLowerCase();
-
     const hash = crypto.createHash("sha256").update(buffer).digest("hex");
-
-    const newFilename = `${hash}${extension}`;
-    const filePath = path.join(UPLOAD_DIR, newFilename);
+    const hashedFilename = `${hash}${extension}`;
+    const filePath = path.join(UPLOAD_DIR, hashedFilename);
 
     try {
       await fs.access(filePath);
-      console.log(`File exists, using existing: ${newFilename}`);
-    } catch (error) {
+      console.log(`Content exists: ${hashedFilename}`);
+    } catch {
       await fs.writeFile(filePath, buffer);
-      console.log(`New file saved: ${newFilename}`);
+      console.log(`New content saved: ${hashedFilename}`);
     }
 
-    req.file.filename = newFilename;
+    (req as any).fileInfo = {
+      hashedFilename: hashedFilename,
+      originalFilename: req.file.originalname,
+    };
 
     next();
   } catch (error) {
