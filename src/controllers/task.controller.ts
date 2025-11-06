@@ -6,22 +6,43 @@ const BASE_URL = process.env.BASE_URL;
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
-    const { search } = req.query;
+    const {
+      search,
+      gender,
+      is_complete,
+      page: pageQuery,
+      limit: limitQuery,
+    } = req.query;
 
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+    const page = parseInt(pageQuery as string) || 1;
+    const limit = parseInt(limitQuery as string) || 30;
     const skip = (page - 1) * limit;
+
     const query: mongoose.FilterQuery<ITask> = {};
 
     if (search && typeof search === "string") {
-      query.$text = { $search: search };
+      const searchRegex = new RegExp(search, "i");
+      query.$or = [
+        { fullname: searchRegex },
+        { title: searchRegex },
+        { major: searchRegex },
+      ];
     }
 
-    const totalTasks = await TaskModel.countDocuments({});
+    if (gender && typeof gender === "string") {
+      query.gender = gender;
+    }
+
+    if (is_complete && (is_complete === "true" || is_complete === "false")) {
+      query.is_complete = is_complete === "true";
+    }
+    const totalTasks = await TaskModel.countDocuments(query);
     const totalPages = Math.ceil(totalTasks / limit);
-    const tasks = await TaskModel.find(query).skip(skip).limit(limit).sort({
-      createdAt: -1,
-    });
+
+    const tasks = await TaskModel.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     res.status(200).json({
       tasks,
@@ -30,7 +51,8 @@ export const getTasks = async (req: Request, res: Response) => {
       totalTasks,
     });
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching tasks:", error);
+    res.status(500).json({ message: "Đã có lỗi xảy ra phía server." });
   }
 };
 
