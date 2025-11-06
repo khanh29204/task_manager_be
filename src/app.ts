@@ -1,9 +1,10 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import connectDB from "./config/db";
 import taskRoutes from "./routes/task.routes";
+import multer from "multer";
 
 dotenv.config();
 
@@ -45,6 +46,19 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/tasks", taskRoutes);
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ message: err.message });
+  }
+
+  if (err) {
+    return res.status(400).json({ message: err.message });
+  }
+
+  res.status(500).json({ message: "Đã có lỗi xảy ra ở phía server." });
+});
 
 const PORT = process.env.PORT || 5000;
 

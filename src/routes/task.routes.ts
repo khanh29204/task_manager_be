@@ -25,7 +25,6 @@ router.post(
   (req, res) => {
     const { hashedFilename, originalFilename } = (req as any).fileInfo;
     const fileUrl = `${process.env.BASE_URL}/api/files/${hashedFilename}/${originalFilename}`;
-
     res.status(201).json({ url: fileUrl });
   }
 );

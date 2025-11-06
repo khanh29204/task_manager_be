@@ -3,7 +3,6 @@ import path from "path";
 import fs from "fs/promises";
 import crypto from "crypto";
 import { Request, Response, NextFunction } from "express";
-import slugify from "slugify";
 
 const UPLOAD_DIR = path.join(__dirname, "../../uploads");
 (async () => {
@@ -30,11 +29,16 @@ export const upload = multer({
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "application/vnd.ms-excel",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "text/plain",
     ];
     if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error("Loại file không được hỗ trợ!"));
+      cb(
+        new Error(
+          "Invalid file type. Only images, PDFs, Word, Excel, and text files are allowed."
+        )
+      );
     }
   },
 });
