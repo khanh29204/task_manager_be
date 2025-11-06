@@ -9,7 +9,7 @@ const MONGO_URI = process.env.MONGO_URI as string;
 
 const SAMPLE_CV_URL =
   "https:www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
-const SAMPLE_DOC_URL = "https:calibre-ebook.com/downloads/demos/demo.docx";
+const SAMPLE_DOC_URL = "https://tasks.quockhanh020924.id.vn/api/files/6b280d4a3ae05cdd5dc8e03fb04fa9a5c7a2300df087354b246e8e4be6806e52.docx/test.docx";
 
 const seedTasks = async () => {
   try {
