@@ -36,7 +36,7 @@ export const getTasks = async (req: Request, res: Response) => {
     if (is_complete && (is_complete === "true" || is_complete === "false")) {
       query.is_complete = is_complete === "true";
     }
-    const totalTasks = await TaskModel.countDocuments(query);
+    const totalTasks = await TaskModel.countDocuments();
     const totalPages = Math.ceil(totalTasks / limit);
 
     const tasks = await TaskModel.find(query)
