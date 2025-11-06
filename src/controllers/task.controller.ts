@@ -110,7 +110,7 @@ export const deleteTask = async (req: Request, res: Response) => {
     if (!deletedTask) {
       return res.status(404).json({ message: "Không tìm thấy công việc" });
     }
-    res.status(200).json({ message: "Xóa công việc thành công" });
+    res.status(200).json({ message: "Xóa công việc thành công", id });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
