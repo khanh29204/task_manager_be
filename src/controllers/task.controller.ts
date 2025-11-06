@@ -58,8 +58,7 @@ export const getTasks = async (req: Request, res: Response) => {
 
 export const createTask = async (req: Request, res: Response) => {
   try {
-    const { fullname, title, major, gender, avatar, cv_path, document_path } =
-      req.body;
+    const { fullname, title } = req.body;
 
     if (!fullname || !title) {
       return res
@@ -68,14 +67,7 @@ export const createTask = async (req: Request, res: Response) => {
     }
 
     const newTaskData: Partial<ITask> = {
-      fullname,
-      title,
-      major,
-      gender,
-      avatar,
-      cv_path,
-      document_path,
-      is_complete: false,
+      ...req.body,
     };
 
     const task = await TaskModel.create(newTaskData);
@@ -93,17 +85,6 @@ export const updateTask = async (req: Request, res: Response) => {
 
   try {
     const updateData: Partial<ITask> = { ...req.body };
-
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-    const avatarFile = files?.avatar?.[0];
-    const cvFile = files?.cvFile?.[0];
-
-    if (avatarFile) {
-      updateData.avatar = `${BASE_URL}/${avatarFile.path}`;
-    }
-    if (cvFile) {
-      updateData.cv_path = `${BASE_URL}/${cvFile.path}`;
-    }
 
     const updatedTask = await TaskModel.findByIdAndUpdate(id, updateData, {
       new: true,

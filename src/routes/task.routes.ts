@@ -10,7 +10,6 @@ import {
   processAndSaveFileByHash,
   upload,
 } from "../middlewares/upload.middleware";
-import slugify from "slugify";
 
 const router = Router();
 
